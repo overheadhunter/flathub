@@ -1,0 +1,132 @@
+{
+  "app-id": "org.standardnotes.standardnotes",
+  "base": "io.atom.electron.BaseApp",
+  "base-version": "18.08",
+  "command": "standard-notes",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "18.08",
+  "sdk": "org.freedesktop.Sdk",
+  "separate-locales": false,
+  "finish-args": [
+    "--device=dri",
+    "--filesystem=xdg-download",
+    "--filesystem=xdg-documents",
+    "--filesystem=xdg-run/keyring",
+    "--share=ipc",
+    "--share=network",
+    "--socket=wayland",
+    "--socket=x11",
+    "--talk-name=org.freedesktop.Notifications",
+    "--talk-name=org.freedesktop.secrets"
+  ],
+  "modules": [
+    {
+      "name": "libsecret",
+      "cleanup": [
+        "/bin",
+        "/include",
+        "/lib/*.la",
+        "/lib/pkgconfig"
+      ],
+      "config-opts": [
+        "--disable-gtk-doc",
+        "--disable-introspection",
+        "--disable-manpages",
+        "--disable-static"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "sha256": "33ee5dfd3556931b81d47111890c8b9c51093b4ced18e0e87f51c1769e24d43c",
+          "url": "https://gitlab.gnome.org/GNOME/libsecret/-/archive/0.18.8/libsecret-0.18.8.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "nodejs",
+      "cleanup": ["*"],
+      "sources": [
+        {
+          "type": "archive",
+          "sha256": "db460a63d057ac015b75bb6a879fcbe2fefaaf22afa4b6f6445b9db61ce2270d",
+          "url": "https://nodejs.org/dist/v10.15.3/node-v10.15.3.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "yarn",
+      "buildsystem": "simple",
+      "build-commands": [
+        "mkdir -p /app/share/yarn/",
+        "cp -a * /app/share/yarn/",
+        "ln -s /app/share/yarn/bin/yarn /app/bin/yarn",
+        "ln -s /app/share/yarn/bin/yarnpkg /app/bin/yarnpkg"
+      ],
+      "cleanup": ["*"],
+      "sources": [
+        {
+          "type": "archive",
+          "sha256": "8a08d62cdbd141d5edd127646ecccc6ed107f20e98ba4cb37c072aabb82f6e24",
+          "url": "https://github.com/yarnpkg/yarn/archive/v1.15.2.tar.gz"
+        }
+      ]
+    },
+    {
+      "name": "standard-notes",
+      "buildsystem": "simple",
+      "build-commands": [
+        "yarn --cwd /run/build/standard-notes/main --offline install",
+        "yarn --cwd /run/build/standard-notes/main --offline run release-linux --${earch} --dir",
+        "cp -r main/dist/linux${suffix}-unpacked /app/standard-notes",
+        "install -D -m0644 main/build/icon/Icon-512x512.png /app/share/icons/hicolor/512x512/apps/${FLATPAK_ID}.png",
+        "install -D -m0755 standard-notes.sh /app/bin/standard-notes",
+        "install -D -m0644 -t /app/share/applications/ ${FLATPAK_ID}.desktop",
+        "install -D -m0644 -t /app/share/metainfo/ ${FLATPAK_ID}.appdata.xml"
+      ],
+      "build-options": {
+        "arch": {
+          "x86_64": { "env": { "earch": "x64", "suffix": "" } }
+        },
+        "env": {
+          "ELECTRON_CACHE": "/run/build/standard-notes/electron-cache/",
+          "electron_config_cache": "/run/build/standard-notes/electron-cache/",
+          "JOBS": "max"
+        }
+      },
+      "sources": [
+        "generated-sources-app.json",
+        "generated-sources.json",
+        {
+          "type": "file",
+          "path": "org.standardnotes.standardnotes.appdata.xml"
+        },
+        {
+          "type": "file",
+          "path": "org.standardnotes.standardnotes.desktop"
+        },
+        {
+          "type": "file",
+          "dest": "main",
+          "path": "yarn.lock"
+        },
+        {
+          "type": "file",
+          "dest-filename": ".yarnrc",
+          "dest": "main",
+          "path": "yarnrc"
+        },
+        {
+          "type": "archive",
+          "dest": "main",
+          "sha256": "77d2d4ad82b34abea07e58970d6f06e17fe2ab0e72ae31226c4ec1f9de2e771c",
+          "url": "https://github.com/standardnotes/desktop/archive/v3.0.8.tar.gz"
+        },
+        {
+          "type": "script",
+          "commands": ["exec env TMPDIR=${XDG_CACHE_HOME}/tmp/ /app/standard-notes/standard-notes \"$@\""],
+          "dest-filename": "standard-notes.sh"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+#
+# Excludes
+.flatpak-builder/
+.idea/
+build/
+flatpak-builder-tools/
+standard-notes/
+
+.DS_Store
+Thumbs.db
+*.iml
+
+
+#
+# Includes
