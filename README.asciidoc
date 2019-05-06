@@ -23,8 +23,15 @@ $ rm -rf .flatpak-builder/ build/
 $ flatpak remote-delete --user flathub
 ----
 
-// Change/Update tag accordingly in `flatpak_build.sh` and run it
-// Open `app-generated-sources.json` and insert `main/app/` in the `sed` entries from `commands` (at the very bottom)
+== Update Flatpak
+
+1. Make sure `git@2.21.0`, `yarn@1.15.2`, `python@2.7.x`, and `python@3.7.x` packages are installed
+1. Open `bootstrap.sh` and change/update the `TAG` variable accordingly
+1. Run `bootstrap.sh`
+1. Commit and push the updated `generated-sources.json`, `generated-sources-app.json`, and `yarn.lock` files
+
+[TIP]
+`flatpak-builder-tools/` and `standard-notes/` directories can be removed at this point.
 
 == Roadmap
 :uri-issues-tracker: https://github.com/flathub/org.standardnotes.standardnotes/issues/

@@ -3,8 +3,6 @@
 .flatpak-builder/
 .idea/
 build/
-generated-cache/
-shared-modules/
 standard-notes/
 
 .DS_Store
